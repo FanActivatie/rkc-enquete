@@ -1,5 +1,6 @@
 // Alle vragen van de enquête op één plek (gebruikt door index.html en admin.html).
-// Types: radio (één keuze), checkbox (meerdere, met max), scale (1-5), contact (tekstveld, alleen als interview = ja)
+// Types: radio (één keuze), checkbox (meerdere, met max), scale (1-5), contact (tekstveld, alleen als interview = ja),
+//        open (tekstvak). Een optie 'Anders' krijgt automatisch een invulregel.
 // route: welke sectie zichtbaar is bij de gekozen kaartsoort ('always' = altijd)
 window.RKC_SURVEY = {
   routes: [
@@ -42,7 +43,7 @@ window.RKC_SURVEY = {
       id: 'los', title: 'Los kaartje', route: 'los',
       questions: [
         { key: 'los_aantal', type: 'radio', cols: 2, text: 'Hoe vaak ben je dit seizoen al bij RKC geweest, vandaag meegerekend?',
-          options: ['1 keer (vandaag is de eerste keer)', '2 tot 3 keer', '4 tot 6 keer', 'Meer dan 6 keer'] },
+          options: ['1 keer', '2 tot 5 keer', '6 tot 10 keer', '10 keer of meer'] },
         { key: 'los_waarom', type: 'checkbox', max: 2, cols: 1, text: 'Waarom heb je (nog) geen seizoenkaart?',
           options: ['Te duur', 'Ik kom niet vaak genoeg', 'Ik weet niet of ik bij elke thuiswedstrijd kan', 'Mijn vrienden hebben er ook geen', 'Ik wist niet dat het kon', 'Ik wil het eerst uitproberen', 'Anders'] },
         { key: 'los_overhalen', type: 'checkbox', max: 2, cols: 1, text: 'Wat zou je overhalen om wel een seizoenkaart te nemen?',
@@ -59,7 +60,7 @@ window.RKC_SURVEY = {
         { key: 'mee_kaartje', type: 'radio', cols: 1, text: 'Hoe ben je aan je kaartje voor vandaag gekomen?',
           options: ['Gekregen of betaald door degene met wie ik mee ben', 'Zelf betaald', 'Via een actie of vrijkaart', 'Weet ik niet'] },
         { key: 'mee_eerder', type: 'radio', cols: 1, text: 'Hoe vaak ben je al naar RKC geweest?',
-          options: ['Nee, dit is mijn eerste keer', 'Ja, 6 tot 10 keer', 'Ja, ik ben meer dan 10 keer geweest'] },
+          options: ['Nee, dit is mijn eerste keer', 'Ja, 2 t/m 5 keer', 'Ja, 6 t/m 10 keer', 'Ja, ik ben meer dan 10 keer geweest'] },
         { key: 'mee_alleen', type: 'radio', cols: 1, text: 'Zou je ook naar RKC gaan zonder deze persoon?',
           options: ['Ja, zeker', 'Misschien', 'Nee, waarschijnlijk niet'] },
         { key: 'mee_terug', type: 'radio', cols: 2, text: 'Hoe groot is de kans dat je dit seizoen nog eens terugkomt?',
@@ -82,7 +83,9 @@ window.RKC_SURVEY = {
         { key: 'interview', type: 'radio', cols: 2, text: 'Zou je het goed vinden als we je later nog even bellen of mailen voor een kort interview van een kwartiertje?',
           options: ['Ja, dat is goed', 'Nee, liever niet'] },
         { key: 'contact', type: 'contact', showIf: { key: 'interview', value: 'Ja, dat is goed' },
-          text: 'Op welk nummer of mailadres mogen we je bereiken?', placeholder: '06-12345678 of naam@voorbeeld.nl' }
+          text: 'Op welk nummer of mailadres mogen we je bereiken?', placeholder: '06-12345678 of naam@voorbeeld.nl' },
+        { key: 'voorstel', type: 'open', text: 'Wat zou jij voorstellen aan RKC?',
+          placeholder: 'Bijv. een actie, iets in het stadion, iets online... (mag je leeg laten)' }
       ]
     }
   ]

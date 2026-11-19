@@ -202,7 +202,7 @@
 
             // Overzicht per vraag (inclusief keuze kaartsoort)
             const blocks = [summaryBlock('Hoe ben je hier vandaag?', 'Route', countRoutes())];
-            QUESTIONS.filter(q => q.type !== 'contact').forEach(q => blocks.push(summaryBlock(q.text, q.section, countValues(q.key))));
+            QUESTIONS.filter(q => q.type !== 'contact' && q.type !== 'open').forEach(q => blocks.push(summaryBlock(q.text, q.section, countValues(q.key))));
             document.getElementById('summaryContainer').innerHTML = blocks.join('');
 
             // Tabel
@@ -227,7 +227,10 @@
             results.forEach(r => {
                 const v = (r.answers || {})[key];
                 if (!v) return;
-                String(v).split(' | ').forEach(part => { counts[part] = (counts[part] || 0) + 1; });
+                String(v).split(' | ').forEach(part => {
+                    const label = part.startsWith('Anders:') ? 'Anders' : part; // toelichting staat in de tabel
+                    counts[label] = (counts[label] || 0) + 1;
+                });
             });
             return Object.entries(counts).sort((a, b) => b[1] - a[1]);
         }

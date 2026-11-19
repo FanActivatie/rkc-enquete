@@ -183,7 +183,7 @@
                 <span class="inline-block bg-rkc-yellow text-rkc-navy text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-full mb-2">
                     RKC Waalwijk • Jouw Mening Telt
                 </span>
-                <h4 class="font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide text-white">Scan &amp; Win / Denk Mee!</h4>
+                <h4 class="font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide text-white">Scan &amp; Denk Mee!</h4>
                 <p class="text-blue-100 text-sm mt-1 mb-5 max-w-xs mx-auto">
                     Scan de QR-code met je camera en vul in 3 minuten de wedstrijdenquête in.
                 </p>
@@ -278,14 +278,21 @@
                 body = renderScale(q);
             } else if (q.type === 'contact') {
                 body = `<input type="text" id="${q.key}" name="${q.key}" maxlength="120" autocomplete="off" placeholder="${escapeHtml(q.placeholder)}" class="w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">`;
+            } else if (q.type === 'open') {
+                body = `<textarea id="${q.key}" name="${q.key}" rows="3" maxlength="500" placeholder="${escapeHtml(q.placeholder || 'Typ hier je antwoord...')}" class="w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>`;
             } else {
                 if (q.type === 'checkbox') {
                     hint = `<p class="text-xs font-bold text-rkc-blue mb-3 ml-9">Kies maximaal ${q.max} opties (<span data-counter="${q.key}">0</span>/${q.max} geselecteerd)</p>`;
                 }
                 body = `<div class="grid ${colClass[q.cols || 1]} gap-2.5">` + q.options.map((o, i) => renderOption(q, o, i)).join('') + `</div>`;
+                // Bij 'Anders' verschijnt een invulregel
+                if (q.options.includes('Anders')) {
+                    body += `<input type="text" id="${q.key}_anders" data-anders-for="${q.key}" maxlength="200" autocomplete="off" placeholder="Anders, namelijk..." class="anders-input hidden mt-2.5 w-full rounded-xl border-2 border-rkc-blue/40 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">`;
+                }
             }
-            const titleTag = q.type === 'contact' ? `label for="${q.key}"` : 'p';
-            const titleClose = q.type === 'contact' ? 'label' : 'p';
+            const isTextField = q.type === 'contact' || q.type === 'open';
+            const titleTag = isTextField ? `label for="${q.key}"` : 'p';
+            const titleClose = isTextField ? 'label' : 'p';
             return `
                 <div class="question-block ${border}" data-key="${q.key}">
                     <${titleTag} class="block text-base sm:text-lg font-bold text-rkc-navy ${hint ? 'mb-1' : 'mb-3'}">
@@ -387,12 +394,21 @@
                 });
                 secEl.querySelector('.section-range').textContent = first === null ? '' : (first === last ? `Vraag ${first}` : `Vraag ${first} – ${last}`);
             });
+            // Invulregel tonen zodra 'Anders' is aangevinkt
+            document.querySelectorAll('.anders-input').forEach(inp => {
+                const checked = !!document.querySelector(`input[name="${inp.dataset.andersFor}"][value="Anders"]:checked`);
+                inp.classList.toggle('hidden', !checked);
+            });
             updateProgress();
         }
 
         function getAnswer(q) {
-            if (q.type === 'contact') return document.getElementById(q.key).value.trim();
-            const checked = Array.from(document.querySelectorAll(`input[name="${q.key}"]:checked`)).map(i => i.value);
+            if (q.type === 'contact' || q.type === 'open') return document.getElementById(q.key).value.trim();
+            const anders = document.getElementById(`${q.key}_anders`);
+            const checked = Array.from(document.querySelectorAll(`input[name="${q.key}"]:checked`)).map(i => {
+                const extra = anders ? anders.value.trim() : '';
+                return i.value === 'Anders' && extra ? `Anders: ${extra}` : i.value;
+            });
             return checked.join(' | ');
         }
 
