@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Onderzoekers - RKC Fan Onderzoek</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <script src="questions.js"></script>
+    <script src="config.js"></script>
+    <style>
+        .rkc-stripes { background: repeating-linear-gradient(-45deg, #0038A8, #0038A8 12px, #002878 12px, #002878 24px); }
+    </style>
+</head>
+<body class="bg-rkc-light text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+    <header class="rkc-stripes text-white shadow-lg border-b-4 border-rkc-yellow">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <img src="rkc-logo.svg" alt="RKC Waalwijk" class="h-12 sm:h-14 w-auto shrink-0 drop-shadow">
+                <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-rkc-yellow">Onderzoekersomgeving</span>
+                    <h1 class="font-display text-xl sm:text-2xl font-bold uppercase">RKC Waalwijk Fan Onderzoek</h1>
+                </div>
+            </div>
+            <button type="button" id="logoutBtn" onclick="logout()" class="hidden bg-white/15 hover:bg-white/25 text-white font-semibold text-sm px-4 py-2 rounded-xl transition">Uitloggen</button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 sm:py-8">
+        <div id="toastBanner" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-rkc-navy text-white border-2 border-rkc-yellow px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-md w-[90%]">
+            <span class="w-6 h-6 rounded-full bg-rkc-yellow text-rkc-navy font-extrabold flex items-center justify-center shrink-0">!</span>
+            <p id="toastMessage" class="text-sm font-medium"></p>
+        </div>
+
+        <!-- Inloggen -->
+        <form id="loginView" class="max-w-sm mx-auto bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+            <div class="bg-rkc-navy px-6 py-4 border-b-4 border-rkc-yellow">
+                <h2 class="font-display text-xl font-bold uppercase text-white">Inloggen</h2>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-slate-600">Alleen voor onderzoekers. Vul het wachtwoord in om de resultaten te bekijken.</p>
+                <input type="password" id="passwordInput" autocomplete="current-password" placeholder="Wachtwoord" class="w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">
+                <p id="loginError" class="hidden text-sm font-semibold text-red-600"></p>
+                <button type="submit" class="w-full bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-bold py-3 rounded-xl shadow transition">Bekijk resultaten</button>
+            </div>
+        </form>
+
+        <!-- Dashboard -->
+        <div id="dashboardView" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="bg-rkc-navy px-6 py-4 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-4 border-rkc-yellow">
+                    <h2 class="font-display text-2xl font-bold uppercase">Resultaten &amp; CSV-Export</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="loadResults()" class="bg-white/15 hover:bg-white/25 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition">↻ Vernieuwen</button>
+                        <button type="button" onclick="exportToCSV()" class="bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-bold text-sm px-4 py-2.5 rounded-xl shadow transition">Download CSV (Excel)</button>
+                    </div>
+                </div>
+                <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-50">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Totaal inzendingen</span>
+                        <p id="statTotal" class="font-display text-3xl font-bold text-rkc-blue mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Gem. verbondenheid</span>
+                        <p id="statAvgScore" class="font-display text-3xl font-bold text-rkc-navy mt-1">-</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Interview bereid</span>
+                        <p id="statInterview" class="font-display text-3xl font-bold text-emerald-600 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Top app</span>
+                        <p id="statTopApp" class="font-display text-2xl font-bold text-rkc-blue mt-1 truncate">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="bg-rkc-blue px-6 py-3 border-b-4 border-rkc-yellow">
+                    <h3 class="font-display text-lg font-bold uppercase text-white">Overzicht per vraag</h3>
+                </div>
+                <div id="summaryContainer" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 flex items-center justify-between border-b border-slate-200">
+                    <h3 class="font-bold text-rkc-navy text-lg">Alle inzendingen</h3>
+                    <a id="sheetLink" href="#" target="_blank" rel="noopener" class="hidden text-xs font-bold text-rkc-blue hover:text-rkc-navy underline">Open Google Sheet ↗</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead id="tableHead" class="bg-rkc-blue text-white text-xs uppercase"></thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const SURVEY = window.RKC_SURVEY;
+        const QUESTIONS = SURVEY.sections.flatMap(s => s.questions.map(q => ({ ...q, section: s.title })));
+        const CONFIG = window.RKC_CONFIG || {};
+        const API_URL = CONFIG.apiUrl || '/api';
+        let password = '';
+        let results = [];
+
+        if (CONFIG.sheetUrl) {
+            const link = document.getElementById('sheetLink');
+            link.href = CONFIG.sheetUrl;
+            link.classList.remove('hidden');
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function showToast(message) {
+            const banner = document.getElementById('toastBanner');
+            document.getElementById('toastMessage').textContent = message;
+            banner.classList.remove('hidden');
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => banner.classList.add('hidden'), 3500);
+        }
+
+        // Wachtwoord alleen voor deze tab onthouden
+        try { password = sessionStorage.getItem('rkc_admin_pw') || ''; } catch (e) {}
+        if (password) loadResults();
+
+        document.getElementById('loginView').addEventListener('submit', (e) => {
+            e.preventDefault();
+            password = document.getElementById('passwordInput').value;
+            loadResults();
+        });
+
+        function logout() {
+            password = '';
+            results = [];
+            try { sessionStorage.removeItem('rkc_admin_pw'); } catch (e) {}
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        async function loadResults() {
+            const errEl = document.getElementById('loginError');
+            errEl.classList.add('hidden');
+            try {
+                let data;
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'results', password })
+                    });
+                    data = await res.json();
+                } catch (e) {
+                    throw new Error('Kon de database niet bereiken. Controleer apiUrl in config.js.');
+                }
+                if (!data.ok) throw new Error(data.error === 'unauthorized' ? 'Onjuist wachtwoord.' : 'Kon resultaten niet laden.');
+                results = sheetToEntries(data.headers || [], data.rows || []);
+                results.sort((a, b) => String(a.receivedAt).localeCompare(String(b.receivedAt)));
+                try { sessionStorage.setItem('rkc_admin_pw', password); } catch (e) {}
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('dashboardView').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                renderDashboard();
+            } catch (err) {
+                logout();
+                errEl.textContent = err.message;
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        // Sheet-kolommen (vraagteksten) terugzetten naar antwoorden per vraag
+        function sheetToEntries(headers, rows) {
+            const col = name => headers.indexOf(name);
+            return rows.map(r => {
+                const answers = {};
+                QUESTIONS.forEach(q => { const i = col(q.text); if (i >= 0) answers[q.key] = r[i]; });
+                return { receivedAt: r[col('Tijdstip')], route: r[col('Route')] || 'Geen keuze', answers };
+            });
+        }
+
+        function fmtTime(iso) {
+            const d = new Date(iso);
+            return isNaN(d) ? '' : d.toLocaleString('nl-NL');
+        }
+
+        function renderDashboard() {
+            const ans = r => r.answers || {};
+            document.getElementById('statTotal').textContent = results.length;
+            const scores = results.map(r => Number(ans(r).verbonden)).filter(n => n > 0);
+            document.getElementById('statAvgScore').textContent = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) + ' / 5' : '-';
+            document.getElementById('statInterview').textContent = results.filter(r => ans(r).interview === 'Ja, dat is goed').length;
+            const top = countValues('app')[0];
+            document.getElementById('statTopApp').textContent = top ? top[0] : '-';
+
+            // Overzicht per vraag (inclusief keuze kaartsoort)
+            const blocks = [summaryBlock('Hoe ben je hier vandaag?', 'Route', countRoutes())];
+            QUESTIONS.filter(q => q.type !== 'contact').forEach(q => blocks.push(summaryBlock(q.text, q.section, countValues(q.key))));
+            document.getElementById('summaryContainer').innerHTML = blocks.join('');
+
+            // Tabel
+            const cols = ['Tijdstip', 'Route', ...QUESTIONS.map(q => q.text)];
+            document.getElementById('tableHead').innerHTML = '<tr><th class="px-3 py-3">#</th>' + cols.map(c => `<th class="px-3 py-3 min-w-[160px] align-bottom">${escapeHtml(c)}</th>`).join('') + '</tr>';
+            const tbody = document.getElementById('tableBody');
+            if (!results.length) {
+                tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="px-4 py-8 text-center text-slate-500">Nog geen inzendingen ontvangen.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = results.slice().reverse().map((r, idx) => `
+                <tr class="hover:bg-slate-50 align-top">
+                    <td class="px-3 py-2 font-bold text-rkc-navy">${results.length - idx}</td>
+                    <td class="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">${escapeHtml(fmtTime(r.receivedAt))}</td>
+                    <td class="px-3 py-2">${escapeHtml(r.route)}</td>
+                    ${QUESTIONS.map(q => `<td class="px-3 py-2">${escapeHtml(ans(r)[q.key] || '-')}</td>`).join('')}
+                </tr>`).join('');
+        }
+
+        function countValues(key) {
+            const counts = {};
+            results.forEach(r => {
+                const v = (r.answers || {})[key];
+                if (!v) return;
+                String(v).split(' | ').forEach(part => { counts[part] = (counts[part] || 0) + 1; });
+            });
+            return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        }
+        function countRoutes() {
+            const counts = {};
+            results.forEach(r => { counts[r.route] = (counts[r.route] || 0) + 1; });
+            return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        }
+
+        function summaryBlock(title, section, entries) {
+            const total = entries.reduce((a, e) => a + e[1], 0);
+            const max = entries.length ? entries[0][1] : 0;
+            const rows = entries.length ? entries.map(([label, n]) => `
+                <div>
+                    <div class="flex justify-between text-xs font-semibold text-slate-700"><span>${escapeHtml(label)}</span><span>${n}</span></div>
+                    <div class="h-2 bg-slate-100 rounded-full mt-1"><div class="h-2 bg-rkc-blue rounded-full" style="width:${Math.round(n / max * 100)}%"></div></div>
+                </div>`).join('') : '<p class="text-xs text-slate-400">Nog geen antwoorden</p>';
+            return `
+                <div class="space-y-2">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-rkc-blue">${escapeHtml(section)} • ${total} antwoorden</p>
+                    <p class="font-bold text-rkc-navy text-sm">${escapeHtml(title)}</p>
+                    ${rows}
+                </div>`;
+        }
+
+        function exportToCSV() {
+            if (!results.length) { showToast('Er zijn nog geen resultaten om te exporteren.'); return; }
+            const headers = ['Tijdstip', 'Route', ...QUESTIONS.map(q => q.text)];
+            const esc = v => `"${String(v ?? '').replace(/\r?\n|\r/g, ' ').replace(/"/g, '""')}"`;
+            const rows = [headers.map(esc).join(';'), ...results.map(r => [
+                fmtTime(r.receivedAt), r.route, ...QUESTIONS.map(q => (r.answers || {})[q.key] || '')
+            ].map(esc).join(';'))];
+            const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `RKC_Waalwijk_Enquete_Resultaten_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+            showToast('CSV-bestand gedownload! Je kunt dit direct in Excel openen.');
+        }
+    </script>
+</body>
+</html>
