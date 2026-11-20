@@ -80,10 +80,10 @@ window.RKC_SURVEY = {
           options: ['De sfeer in het stadion', 'Samen zijn met vrienden of familie', 'Als RKC wint', 'Eten en drinken rond de wedstrijd', 'Muziek en activiteiten voor de wedstrijd', 'Spelers van dichtbij zien'] },
         { key: 'verbonden', type: 'scale', text: 'Als je een cijfer van 1 tot 5 geeft: hoe verbonden voel je je met RKC?',
           options: ['1', '2', '3', '4', '5'], labels: ['Heel weinig', 'Weinig', 'Neutraal', 'Veel', 'Heel erg'] },
-        { key: 'interview', type: 'radio', cols: 2, text: 'Zou je het goed vinden als we je later nog even bellen of mailen voor een kort interview van een kwartiertje?',
+        { key: 'interview', type: 'radio', cols: 2, text: 'Zou je het goed vinden als we je later nog even mailen voor een paar korte vragen?',
           options: ['Ja, dat is goed', 'Nee, liever niet'] },
         { key: 'contact', type: 'contact', showIf: { key: 'interview', value: 'Ja, dat is goed' },
-          text: 'Op welk nummer of mailadres mogen we je bereiken?', placeholder: '06-12345678 of naam@voorbeeld.nl' },
+          text: 'Op welk mailadres mogen we je mailen?', placeholder: 'naam@voorbeeld.nl' },
         { key: 'voorstel', type: 'open', text: 'Wat zou jij voorstellen aan RKC?',
           placeholder: 'Bijv. een actie, iets in het stadion, iets online... (mag je leeg laten)' }
       ]
