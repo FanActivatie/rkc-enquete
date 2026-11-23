@@ -12,12 +12,14 @@ window.RKC_SURVEY = {
     {
       id: 'over-jou', title: 'Over jou', route: 'always', dark: true,
       questions: [
+        { key: 'leeftijd', type: 'radio', cols: 2, text: 'Hoe oud ben je?',
+          options: ['0 tot 15 jaar', '16 tot 25 jaar', '26 tot 35 jaar', '36 tot 50 jaar', '51+ jaar'] },
         { key: 'woonplaats', type: 'radio', cols: 2, text: 'Waar woon je?',
           options: ['Waalwijk', 'Drunen / Heusden', 'Kaatsheuvel / Loon op Zand', 'Tilburg', "'s-Hertogenbosch", 'Elders in Noord-Brabant', 'Buiten Noord-Brabant'] },
         { key: 'woonduur', type: 'radio', cols: 2, text: 'Hoe lang woon je daar al?',
           options: ['Korter dan 1 jaar', '1 tot 5 jaar', '5 tot 10 jaar', 'Langer dan 10 jaar', 'Mijn hele leven'] },
         { key: 'bezigheid', type: 'radio', cols: 2, text: 'Studeer je, werk je, of zit je nog op school?',
-          options: ['Ik studeer', 'Ik werk', 'Ik zit nog op school', 'Anders'] },
+          options: ['Ik studeer (mbo, hbo of universiteit)', 'Ik werk', 'Ik zit op de middelbare school', 'Anders'] },
         { key: 'metwie', type: 'radio', cols: 2, text: 'Met wie ben je hier vandaag?',
           options: ['Alleen', 'Met vrienden', 'Met familie of ouders', "Met collega's of teamgenoten", 'Anders'] },
         { key: 'voetbal', type: 'radio', cols: 1, text: 'Voetbal je zelf, of heb je vroeger gevoetbald?',
